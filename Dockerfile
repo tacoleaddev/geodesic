@@ -1,10 +1,10 @@
 #
 # Python Dependencies
 #
-FROM alpine:3.11.6 as python
+FROM alpine:3.12 as python
 
 RUN sed -i 's|http://dl-cdn.alpinelinux.org|https://alpine.global.ssl.fastly.net|g' /etc/apk/repositories
-RUN apk add python3 python3-dev libffi-dev gcc linux-headers musl-dev openssl-dev make
+RUN apk add python3 py3-pip python3-dev libffi-dev gcc linux-headers musl-dev openssl-dev make
 
 ## Note:
 # To install aws-gogle-auth:
@@ -19,7 +19,7 @@ RUN apk add python3 python3-dev libffi-dev gcc linux-headers musl-dev openssl-de
 COPY requirements.txt /requirements.txt
 
 RUN python3 -m pip install --upgrade pip setuptools wheel && \
-    pip install -r /requirements.txt --ignore-installed --prefix=/dist --no-build-isolation --no-warn-script-location
+    pip3 install -r /requirements.txt --ignore-installed --prefix=/dist --no-build-isolation --no-warn-script-location
 
 #
 # Google Cloud SDK
@@ -29,7 +29,7 @@ FROM google/cloud-sdk:303.0.0-alpine as google-cloud-sdk
 #
 # Geodesic base image
 #
-FROM alpine:3.11.6
+FROM alpine:3.12
 
 # Set XDG environment variables per https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
 # This is not a "multi-user" system, so we'll use special directories under
@@ -60,7 +60,7 @@ USER root
 
 # install the cloudposse alpine repository
 ADD https://apk.cloudposse.com/ops@cloudposse.com.rsa.pub /etc/apk/keys/
-RUN echo "@cloudposse https://apk.cloudposse.com/3.11/vendor" >> /etc/apk/repositories
+RUN echo "@cloudposse https://apk.cloudposse.com/3.12/vendor" >> /etc/apk/repositories
 
 # Use TLS for alpine default repos
 RUN sed -i 's|http://dl-cdn.alpinelinux.org|https://alpine.global.ssl.fastly.net|g' /etc/apk/repositories && \
